@@ -1,9 +1,44 @@
 const Campground = require('../models/Campground.js')
 
 exports.getCampgrounds = async(req, res,next) => {
+    let query;
+    const reqQuery = {...req.query};
+    const removeFields = ['select','sort','page','limit'];
+    removeFields.forEach(param=>delete reqQuery[param]);
+    console.log(reqQuery);
+    let queryStr = JSON.stringify(req.query);
+    queryStr = queryStr.replace(/\b(gt|gt|lt|lte|in)\b/g,match => `$${match}`);
+    query = Campground.find(JSON.parse(queryStr)).populate('bookings')
+    if(req.query.select){
+        const fields = req.query.select.split(',').join(' ');
+        query = query.select(fields);
+    }
+    if(req.query.sort){
+        const sortBy = req.query.sort.split(',').join(' ');
+        query=query.sort(sortBy);
+    } else {
+        query=query.sort('name');
+        
+    }
+    const campgrouds = await query;
     try{
-        const campgrouds = await Campground.find();
-        res.status (200).json({success:true, count:campgrouds.length,data: campgrouds});
+        const total = await Campground.countDocuments();
+        query = query.skip(startIndex).limit(limit);
+        const campgrouds = await query;
+        const pagination = {};
+        if(endIndex<total){
+            pagination.next={
+                page:page+1,
+                limit
+            }
+        }
+        if(startIndex>0){
+            pagination.prev={
+                page:page-1,
+                limit
+            }
+        }
+        res.status(200).json({success:true,count:campgrouds.length,pagination,data:campgrouds});
     } catch (err) {
         res.status(400).json({success:false});
     }
@@ -44,10 +79,11 @@ exports.updateCampground= async (req, res,next)=>{
 };
 exports.deleteCampground = async(req, res,next) => {
     try{
-        const campground = await Campground.findByIdAndDelete (req.params.id);
+        const campground = await Campground.findById (req.params.id);
         if(!campground) {
             return res.status (400).json({success:false});
         };
+        await campground.deleteOne();
         res.status (200).json({success:true, data: {}});
     } catch (err) {
         res.status (400).json({success:false});
