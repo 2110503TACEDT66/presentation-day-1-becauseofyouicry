@@ -1,7 +1,7 @@
 const mongoose = require('mongoose') ;
 
 const BookingSchema = new mongoose.Schema({
-    campgroundname : {
+    campground : {
         type : mongoose.Schema.ObjectId,
         ref : 'Campground',
         require : true 

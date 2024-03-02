@@ -20,11 +20,11 @@ exports.getCampgrounds = async(req, res,next) => {
         query=query.sort('name');
         
     }
-    const campgrouds = await query;
+    const campgrounds = await query;
     try{
         const total = await Campground.countDocuments();
         query = query.skip(startIndex).limit(limit);
-        const campgrouds = await query;
+        const campgrounds = await query;
         const pagination = {};
         if(endIndex<total){
             pagination.next={
@@ -38,28 +38,28 @@ exports.getCampgrounds = async(req, res,next) => {
                 limit
             }
         }
-        res.status(200).json({success:true,count:campgrouds.length,pagination,data:campgrouds});
+        res.status(200).json({success:true,count:campgrounds.length,pagination,data:campgrounds});
     } catch (err) {
         res.status(400).json({success:false});
     }
 };
 exports.getCampground = async(req, res,next) => {
     try{
-        const campgroud = await Campground.findById(req.params.id);
-        if(!campgroud){
+        const campground = await Campground.findById(req.params.id);
+        if(!campground){
             return res.status(400).json({success : false});
         }
-        res.status (200).json({success:true, data: campgroud});
+        res.status (200).json({success:true, data: campground});
     } catch(err) {
         res.status(400).json({success:false});
     }
 
 };
 exports.createCampground = async(req, res,next) => {
-    const campgroud = await Campground.create(req.body);
+    const campground = await Campground.create(req.body);
     res.status (201).json({
         success:true, 
-        data : campgroud
+        data : campground
     });
 };
 
