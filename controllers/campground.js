@@ -7,7 +7,7 @@ exports.getCampgrounds = async(req, res,next) => {
     removeFields.forEach(param=>delete reqQuery[param]);
     console.log(reqQuery);
     let queryStr = JSON.stringify(req.query);
-    queryStr = queryStr.replace(/\b(gt|gt|lt|lte|in)\b/g,match => `$${match}`);
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`)
     query = Campground.find(JSON.parse(queryStr)).populate('bookings')
     if(req.query.select){
         const fields = req.query.select.split(',').join(' ');
@@ -20,7 +20,10 @@ exports.getCampgrounds = async(req, res,next) => {
         query=query.sort('name');
         
     }
-    const campgrounds = await query;
+    const page = parseInt(req.query.page,10) || 1;
+    const limit = parseInt(req.query.limit,10) || 25;
+    const startIndex = (page-1)*limit;
+    const endIndex = page*limit;
     try{
         const total = await Campground.countDocuments();
         query = query.skip(startIndex).limit(limit);
