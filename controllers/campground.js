@@ -8,8 +8,16 @@ exports.getCampgrounds = async(req, res,next) => {
         res.status(400).json({success:false});
     }
 };
-exports.getCampground = (req, res,next) => {
-    res.status (200).json({success:true, msg:`Show campgroud ${req.params.id}`});
+exports.getCampground = async(req, res,next) => {
+    try{
+        const campgroud = await Campground.findById(req.params.id);
+        if(!campgroud){
+            return res.status(400).json({success : false});
+        }
+        res.status (200).json({success:true, data: campgroud});
+    } catch(err) {
+        res.status(400).json({success:false});
+    }
 
 };
 exports.createCampground = async(req, res,next) => {
@@ -19,9 +27,29 @@ exports.createCampground = async(req, res,next) => {
         data : campgroud
     });
 };
-exports.updateCampground = (req,res,next) => {
-    res.status (200).json({success:true, msg:`Update campgroud ${req.params.id}`});
+
+exports.updateCampground= async (req, res,next)=>{
+    try{
+        const campground = await Campground.findByIdAndUpdate (req.params.id, req.body, { 
+            new: true,
+            runValidators:true
+        });
+        if(!campground) {
+            return res.status (400).json({success:false});
+        };
+        res.status (200).json({success:true, data: campground});
+    } catch (err) {
+        res.status (400).json({success:false});
+    }
 };
-exports.deleteCampground = (req, res,next) => {
-    res.status (200).json({success:true, msg:`Delete campgroud ${req.params.id}`});
+exports.deleteCampground = async(req, res,next) => {
+    try{
+        const campground = await Campground.findByIdAndDelete (req.params.id);
+        if(!campground) {
+            return res.status (400).json({success:false});
+        };
+        res.status (200).json({success:true, data: {}});
+    } catch (err) {
+        res.status (400).json({success:false});
+    }
 };

@@ -37,7 +37,7 @@ app.use(cors());
 app.use('/api/v1/campgrounds',campgrounds);
 //เอา app.use campground ไว้ด้านบนบรรทัดนี้ (ปัง)
 app.use('/api/v1/auth',auth);
-app.use('/api/v1/booking',bookings);
+app.use('/api/v1/bookings',bookings);
 
 
 app.get('/', (req,res) => {
