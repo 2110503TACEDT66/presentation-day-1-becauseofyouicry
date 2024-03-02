@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 //route file เอารวมไว้ตรงนี้
 const auth = require('./routes/auth');
 const campgrounds = require('./routes/campgrounds');
+const bookings = require('./routes/bookings');
 //API Security & other
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
@@ -36,6 +37,7 @@ app.use(cors());
 app.use('/api/v1/campgrounds',campgrounds);
 //เอา app.use campground ไว้ด้านบนบรรทัดนี้ (ปัง)
 app.use('/api/v1/auth',auth);
+app.use('/api/v1/booking',bookings);
 
 
 app.get('/', (req,res) => {
