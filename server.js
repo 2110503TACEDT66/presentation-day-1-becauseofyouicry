@@ -14,7 +14,6 @@ const hpp = require('hpp');
 const cors = require('cors');
 
 dotenv.config({path:'./config/config.env'});
-//test2
 //connect to db
 connectDB();
 
@@ -34,9 +33,10 @@ app.use(hpp());
 
 app.use(cors());
 
+app.use('/api/v1/campgrounds',campgrounds);
 //เอา app.use campground ไว้ด้านบนบรรทัดนี้ (ปัง)
 app.use('/api/v1/auth',auth);
-app.use('/api/v1/campgrounds',campgrounds);
+
 
 app.get('/', (req,res) => {
     res.status(200).json({success:true, data:{id:1}});
