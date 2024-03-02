@@ -66,8 +66,7 @@ exports.addBooking = async (req, res, next) => {
         const existingBookings = await Booking.find({
             campground: req.params.campgroundId,
             Date: req.body.Date,
-            status: 'confirmed' // Assume have a status field to indicate confirmed bookings
-        });
+            });
 
         if (existingBookings.length > 0) {
             return res.status(400).json({
@@ -115,7 +114,6 @@ exports.updateBooking = async (req, res, next) => {
         const existingBookings = await Booking.find({
             campground: booking.campground,
             Date: req.body.Date,
-            status: 'confirmed', // Assume have a status field to indicate confirmed bookings
             _id: { $ne: req.params.id } // Exclude the current booking being updated
         });
 
