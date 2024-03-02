@@ -1,4 +1,5 @@
 const mongoose = require('mongoose') ;
+const User = require('../models/User');
 
 const BookingSchema = new mongoose.Schema({
     campground : {
@@ -19,6 +20,11 @@ const BookingSchema = new mongoose.Schema({
         type : Date,
         default : Date.now
     }
+});
+
+BookingSchema.pre('save', {document : true , query : false}, async function (next) {
+    const updateUser = await User.findByIdAndUpdate(this.user , {"$push" : {"bookings" : this.id}});
+    console.log(updateUser);
 });
 
 module.exports=mongoose.model('Booking',BookingSchema) ;

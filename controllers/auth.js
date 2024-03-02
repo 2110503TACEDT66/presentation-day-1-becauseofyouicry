@@ -65,13 +65,25 @@ const sendTokenResponse=(user,statusCode,res)=>{
     })
 }
 
-exports.getMe=async(req,res,next)=> {
-    const user=await User.findById(req.user.id);
-    res.status(200).json({
-        success:true,
-        data:user
-    });
-}
+exports.getMe = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id).populate({
+            path:'bookings',
+            select:'campground Date'
+        });
+
+        res.status(200).json({
+            success: true,
+            data: user,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Cannot fetch user data',
+        });
+    }
+};
 
 exports.logout=async(req,res,next) => {
     res.cookie('token','none',{

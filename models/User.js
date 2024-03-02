@@ -31,6 +31,13 @@ const UserSchema = new mongoose.Schema({
     minlength: 6,
     select: false
   },
+  
+  bookings: [
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking',
+    },
+],
 
   role: {
     type: String,
