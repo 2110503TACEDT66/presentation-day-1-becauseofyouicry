@@ -85,6 +85,15 @@ exports.addBooking = async (req, res, next) => {
                 message: `The user with ID ${req.user.id} has already made 3 bookings.`
             });
         }
+         
+        // ++Check if the booking date is in the past
+         const bookingDate = new Date(req.body.Date);
+         if (isPast(bookingDate)) {
+             return res.status(400).json({
+                 success: false,
+                 message: `Cannot create booking with a date in the past`
+             });
+         }
 
         const booking = await Booking.create(req.body);
         res.status(200).json({ success: true, data: booking });
@@ -108,6 +117,17 @@ exports.updateBooking = async (req, res, next) => {
                 success: false,
                 message: `User ${req.user.id} is not authorized to update this booking`
             });
+        }
+
+        // ++Check if the updated booking date is in the past
+        if (req.body.Date) {
+            const updatedBookingDate = new Date(req.body.Date);
+            if (isPast(updatedBookingDate)) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Cannot update booking with a date in the past`
+                });
+            }
         }
 
         // Check for existing bookings for the same campground and date
