@@ -71,32 +71,32 @@ exports.addBooking = async (req, res, next) => {
             Date: req.body.Date,
             });
 
+            // ++Check if the booking date is in the past
+             const bookingDate = new Date(req.body.Date);
+             if (isPast(bookingDate)) {
+                 return res.status(400).json({
+                     success: false,
+                     message: `Cannot create booking with a date in the past`
+                 });
+             }
+
+             // Check for existing bookings by the user
+             const existingBookingsByUser = await Booking.find({ user: req.user.id });
+     
+             // If the user is not an admin, they can only create 3 bookings
+             if (existingBookingsByUser.length >= 3 && req.user.role !== 'admin') {
+                 return res.status(400).json({
+                     success: false,
+                     message: `The user with ID ${req.user.id} has already made 3 bookings.`
+                 });
+             }
+
         if (existingBookings.length > 0) {
             return res.status(400).json({
                 success: false,
-                message: `This place is already booked for the selected date. Please choose a different date.`
+                message: `This place is already booked for the selected date. Please choose a different date or campground.`
             });
         }
-
-        // Check for existing bookings by the user
-        const existingBookingsByUser = await Booking.find({ user: req.user.id });
-
-        // If the user is not an admin, they can only create 3 bookings
-        if (existingBookingsByUser.length >= 3 && req.user.role !== 'admin') {
-            return res.status(400).json({
-                success: false,
-                message: `The user with ID ${req.user.id} has already made 3 bookings.`
-            });
-        }
-         
-        // ++Check if the booking date is in the past
-         const bookingDate = new Date(req.body.Date);
-         if (isPast(bookingDate)) {
-             return res.status(400).json({
-                 success: false,
-                 message: `Cannot create booking with a date in the past`
-             });
-         }
 
         const booking = await Booking.create(req.body);
         res.status(200).json({ success: true, data: booking });
