@@ -1,0 +1,33 @@
+@startuml Booking use case diagram
+left to right direction
+
+actor "User" as User
+
+rectangle Booking {
+  usecase "Create Booking" as cb
+  usecase "View All User's Booking" as vieww
+  usecase "Update User's Booking" as upp
+  usecase "Delete User's Booking" as dee
+
+  usecase "View All Booking" as view
+  usecase "Update User Booking" as up
+  usecase "Delete User Booking" as de
+}
+
+User -- cb
+User -- vieww
+User -- upp
+User -- dee
+
+actor "Admin" as admin
+cb -- admin
+view -- admin
+up -- admin
+de -- admin
+
+vieww <-[dashed]- view : <<include>>
+upp <-[dashed]- up : <<include>>
+dee <-[dashed]- de : <<include>> 
+
+@enduml
+

@@ -1,0 +1,22 @@
+@startuml auth use case diagram
+left to right direction
+
+actor "User" as User
+
+rectangle Auth {
+  usecase "Register" as reg
+  usecase "Login" as log
+  usecase "getMe" as gm 
+}
+
+User -- reg
+User -- log
+User -- gm
+
+actor "Admin" as admin
+reg -- admin
+log -- admin
+gm -- admin
+
+@enduml
+

@@ -1,0 +1,26 @@
+@startuml Campground use case diagram
+left to right direction
+
+actor "User" as User
+
+rectangle Campground {
+  usecase "View Campgrounds" as vc
+
+  usecase "Ceate Campground" as view
+  usecase "Update Campground" as up
+  usecase "Delete Campground" as de
+}
+
+
+User -- vc
+
+actor "Admin" as admin
+vc -- admin
+view -- admin
+up -- admin
+de -- admin
+
+
+@enduml
+
+

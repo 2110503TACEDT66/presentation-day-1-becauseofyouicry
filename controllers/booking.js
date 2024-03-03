@@ -65,7 +65,7 @@ exports.addBooking = async (req, res, next) => {
         // Add user id to req body
         req.body.user = req.user.id;
 
-        // Check for existing bookings for the same campground and overlapping dates
+        // ++Check for existing bookings for the same campground and overlapping dates
         const existingBookings = await Booking.find({
             campground: req.params.campgroundId,
             Date: req.body.Date,
@@ -122,7 +122,7 @@ exports.updateBooking = async (req, res, next) => {
             });
         }
 
-        // Check if the updated booking date is in the past
+        // ++Check if the updated booking date is in the past
         if (req.body.Date) {
             const updatedBookingDate = new Date(req.body.Date);
             if (isPast(updatedBookingDate)) {
@@ -133,7 +133,7 @@ exports.updateBooking = async (req, res, next) => {
             }
         }
 
-        // Check for existing bookings for the same campground and date
+        // ++Check for existing bookings for the same campground and date
         const existingBookings = await Booking.find({
             campground: booking.campground,
             Date: req.body.Date,
