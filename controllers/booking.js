@@ -155,20 +155,27 @@ exports.updateBooking = async (req, res, next) => {
     }
 };
 
-exports.deleteBooking=async (req,res,next)=>{
-    try{
-        const booking = await Booking.findById(req.params.id) ;
-        
-        if(!booking){
-            return res.status(404).json({success:false,message:`No booking with the id of ${req.params.id}`}) ;
-        }
-        await booking.deleteOne() ;
-        res.status(200).json({success:true,data: {}}) ;
-    }catch(err){
-        console.log(err.stack);
-        return res.status(500).json({success:false,message:`Cannot delete Booking`}) ;
+exports.deleteBooking = async (req, res, next) => {
+    try {
+      const booking = await Booking.findById(req.params.id);
+  
+      if (!booking) {
+        return res.status(404).json({ success: false, message: `No booking with the id of ${req.params.id}` });
+      }
+  
+      
+      if (req.user.role !== 'admin' && !booking.user.equals(req.user.id)) {
+        return res.status(403).json({ success: false, message: `Permission denied. You are not allowed to delete this booking.` });
+      }
+  
+      await booking.deleteOne();
+      res.status(200).json({ success: true, data: {} });
+    } catch (err) {
+      console.log(err.stack);
+      return res.status(500).json({ success: false, message: `Cannot delete Booking` });
     }
-}
+  };
+  
 
 
   

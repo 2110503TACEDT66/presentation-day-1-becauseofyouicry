@@ -22,9 +22,5 @@ const BookingSchema = new mongoose.Schema({
     }
 });
 
-BookingSchema.pre('save', {document : true , query : false}, async function (next) {
-    const updateUser = await User.findByIdAndUpdate(this.user , {"$push" : {"bookings" : this.id}});
-    console.log(updateUser);
-});
 
 module.exports=mongoose.model('Booking',BookingSchema) ;
