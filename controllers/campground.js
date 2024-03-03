@@ -1,5 +1,5 @@
 const Campground = require('../models/Campground.js')
-
+const axios = require('axios');
 exports.getCampgrounds = async(req, res,next) => {
     let query;
     const reqQuery = {...req.query};
@@ -92,3 +92,51 @@ exports.deleteCampground = async(req, res,next) => {
         res.status (400).json({success:false});
     }
 };
+
+function extractTownFromAddress(address) {
+    const words = address.split(' ');
+
+    if (words.length >= 2) {
+        const town = words[words.length - 2];
+        return town;
+    } else {
+        return null;
+    }
+}
+
+
+
+async function getWeatherByTown(town) {
+    try {
+        const apiKey = '5d7444efbcf9d4d1647096d8f748c38e';
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${town}&units=metric&APPID=${apiKey}`;
+
+        const response = await axios.get(apiUrl);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error fetching weather data');
+    }
+}
+exports.getCampgroundWeather = async (req, res, next) => {
+    try {
+        const campground = await Campground.findById(req.params.id);
+
+        if (!campground) {
+            return res.status(400).json({ success: false, message: 'Campground not found' });
+        }
+
+        const town = extractTownFromAddress(campground.address);
+        if (!town) {
+            return res.status(400).json({ success: false, message: 'Town not found in the address' });
+        }
+
+        const weatherData = await getWeatherByTown(town);
+        return res.status(200).json({ success: true, data: weatherData });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, message: 'Error getting weather data' });
+    }
+};
+
+
