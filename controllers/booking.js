@@ -143,7 +143,7 @@ exports.updateBooking = async (req, res, next) => {
         if (existingBookings.length > 0) {
             return res.status(400).json({
                 success: false,
-                message: `This booking conflicts with existing bookings for the same campground and date. Please choose a different date.`
+                message: `This booking conflicts with existing bookings for the same campground and date. Please choose a different date or campground.`
             });
         }
 
@@ -154,8 +154,6 @@ exports.updateBooking = async (req, res, next) => {
         return res.status(500).json({ success: false, message: `Cannot update booking` });
     }
 };
-
-
 
 exports.deleteBooking=async (req,res,next)=>{
     try{
@@ -172,42 +170,5 @@ exports.deleteBooking=async (req,res,next)=>{
     }
 }
 
-const generateGoogleMapsUrl = (address) => {
-    const encodedAddress = encodeURIComponent(address);
-    return `https://www.google.com/maps?q=${encodedAddress}`;
-  };
-  
-  exports.getBookingLocation = async (req, res, next) => {
-    try {
-      const booking = await Booking.findOne({
-        _id: req.params.id,
-        user: req.user.id,
-      }).populate({
-        path: 'campground',
-        select: 'address',
-      });
-  
-      if (!booking) {
-        return res.status(404).json({
-          success: false,
-          message: `No booking found with the id of ${req.params.id} for the current user`,
-        });
-      }
-  
-      const address = booking.campground.address;
-      const googleMapsUrl = generateGoogleMapsUrl(address);
-  
-      res.status(200).json({
-        success: true,
-        address: address,
-        googleMapsUrl: googleMapsUrl,
-      });
-    } catch (err) {
-      console.log(err.stack);
-      return res.status(500).json({
-        success: false,
-        message: 'Cannot retrieve booking location',
-      });
-    }
-  };
+
   

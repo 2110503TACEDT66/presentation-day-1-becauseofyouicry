@@ -139,4 +139,40 @@ exports.getCampgroundWeather = async (req, res, next) => {
     }
 };
 
+const generateGoogleMapsUrl = (address) => {
+    const encodedAddress = encodeURIComponent(address);
+    return `https://www.google.com/maps?q=${encodedAddress}`;
+  };
+  
+exports.getCampgroundLocation = async (req, res, next) => {
+    try {
+      const campground = await Campground.findOne({
+        _id: req.params.id,
+      }).select('address');
+  
+      if (!campground) {
+        return res.status(404).json({
+          success: false,
+          message: `No campground found with the id of ${req.params.id}`,
+        });
+      }
+  
+      const address = campground.address;
+      const googleMapsUrl = generateGoogleMapsUrl(address);
+  
+      res.status(200).json({
+        success: true,
+        address: address,
+        googleMapsUrl: googleMapsUrl,
+      });
+    } catch (err) {
+      console.log(err.stack);
+      return res.status(500).json({
+        success: false,
+        message: 'Cannot retrieve campground location',
+      });
+    }
+  };
+  
+
 
