@@ -1,50 +1,97 @@
 @startuml
 
-package "Campground" {
-    class "<<Application>>\nCampgroundBookingService" as BaseCampground {}
-
-    class "<<Resource>>\nAuth" as ResourceAuth {}
-
-    class "<<Resource>>\nCampground" as ResourceCampground {}
-
-    class "<<Resource>>\nBooking" as ResourceBooking {}
-
-    
-
-    class "<<Resource>>\nLogin" as rLogin {}
-
-    class "<<Resource>>\nLogout" as rLogout {}
-
-    class "<<Resource>>\nRegister" as rRegister {}
-
-    class "<<Resource>>\nGetMe" as rGetme {}
-
-    class "<<Model>>\nUser" as ModelUser {
-        -name
-        -email
-        -password
-        -role
-    }
-
-
-    
-
-
+class "CampgroundBookingApp" <<Application>> {
 }
 
-BaseCampground --> ResourceAuth: "<<Path>> /auth"
-ResourceAuth --> rRegister: "<<Path>> /register"
-ResourceAuth --> rLogin: "<<Path>> /login"
-ResourceAuth --> rLogout: "<<Path>> /logout"
-ResourceAuth --> rGetme: "<<Path>> /me"
+class "<<Resource>>\nAuthService" {
+}
+
+class "<<Resource>>\nLoginService" {
+  <<POST>> + login : User
+}
+
+class "<<Resource>>\nRegisterService" {
+  <<POST>> + register : User
+}
+
+class "<<Resource>>\nGetmeService" {
+  <<GET>> + getMe : User
+}
+
+class "<<Resource>>\nLogoutService" {
+  <<POST>> + logout : User
+}
+
+class "<<Resource>>\nTokenResponseService" {
+  <<POST>> + sendTokenResponse : User
+}
+
+class "<<Model>>\nUser" {
+  - userId: String
+  - username: String
+  - email: String
+  - password: String
+}
+
+class "<<Model>>\nBooking" {
+  - bookingId: String
+  - bookingDetails: String
+  - date: Date
+  - status: String
+}
+
+class "<<Resource>>\nBooking" {
+    <<GET>> + getBooking() : Booking
+    <<POST>> + addBooking() : Booking
+    <<PUT>> + updateBooking() : Booking
+    <<DELETE>> + deleteBooking() : void
+}
+
+class "<<Resource>>\nBookings" {
+  <<GET>> + getBookings : Bookings
+}
+
+class "<<Model>>\nCampground" {
+  - campgroundId: String
+  - campgroundDetails: String
+  - location: String
+  - facilities: String
+}
+
+class "<<Resource>>\nCampground" {
+    <<GET>> + getCampground() : Campground
+    <<POST>> + createCampground() : Campground
+    <<PUT>> + updateCampground() : Campground
+    <<DELETE>> + deleteCampground() : void
+}
+
+class "<<Resource>>\nCampgrounds" {
+  <<GET>> + getCampgrounds : Campgrounds
+}
+
+"CampgroundBookingApp" -- "<<Resource>>\nAuthService" : <<Path>>\nAuth
+"CampgroundBookingApp" -- "<<Resource>>\nCampground" : <<Path>>\nCampground
+"CampgroundBookingApp" -- "<<Resource>>\nBookings" : <<Path>>\nBooking
+
+"<<Resource>>\nAuthService" -- "<<Resource>>\nLoginService" : <<Path>>\nlogin
+"<<Resource>>\nAuthService" -- "<<Resource>>\nRegisterService"  : <<Path>>\nregister
+"<<Resource>>\nAuthService" -- "<<Resource>>\nGetmeService"  : <<Path>>\nGetme
+"<<Resource>>\nAuthService" -- "<<Resource>>\nLogoutService"  : <<Path>>\nlogout
+"<<Resource>>\nAuthService" -- "<<Resource>>\nTokenResponseService"  : <<Path>>\nsendTokenResponse
+
+"<<Resource>>\nLoginService" -- "<<Model>>\nUser" : <<Use>>
+"<<Resource>>\nRegisterService" -- "<<Model>>\nUser" : <<Use>>
+"<<Resource>>\nGetmeService" -- "<<Model>>\nUser" : <<Use>>
+"<<Resource>>\nLogoutService" -- "<<Model>>\nUser" : <<Use>>
+"<<Resource>>\nTokenResponseService" -- "<<Model>>\nUser" : <<Use>>
+
+"<<Resource>>\nBookings" -- "<<Resource>>\nBooking" : <<Path>>\nBooking_ID
+"<<Resource>>\nBooking" -- "<<Model>>\nBooking" : <<Use>>
+"<<Resource>>\nBookings" -- "<<Model>>\nBooking" : <<Use>>
 
 
-rRegister --> ModelUser: "<<Use>>" 
-rLogin --> ModelUser: "<<Use>>" 
-rLogout --> ModelUser: "<<Use>>" 
-rGetme --> ModelUser: "<<Use>>" 
-
-BaseCampground --> ResourceCampground: "<<Path>> /campgrounds"
-BaseCampground --> ResourceBooking: "<<Path>> /booking"
+"<<Resource>>\nCampground" -- "<<Resource>>\nCampgrounds" : <<Path>>\nCampgrounds_ID
+"<<Resource>>\nCampground" -- "<<Model>>\nCampground" : <<Use>>
+"<<Resource>>\nCampgrounds" -- "<<Model>>\nCampground" : <<Use>>
 
 @enduml

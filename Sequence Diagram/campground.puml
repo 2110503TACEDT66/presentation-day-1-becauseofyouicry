@@ -1,0 +1,221 @@
+@startuml
+
+actor User
+
+participant "server.js" as Server
+participant "<<modules>>\nauth" as AuthModule
+participant "<<controllers>>\nauth" as AuthController
+participant "<<middleware>>\nauth" as AuthMiddleware
+participant "<<routes>>\ncampgrounds" as Routes
+participant "<<controllers>>\ncampground" as Controller
+participant "<<models>>\nCampground" as CampgroundModel
+participant "openweathermapAPI" as ExternalAPI
+database "MongoDB\n:campgrounds" as CampgroundsDatabase
+
+User -> Server: Send "Get all campgrounds"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> AuthController: Verify token
+activate AuthController
+AuthController -> AuthModule: Decode JWT
+activate AuthModule
+AuthModule --> AuthController: Decoded user
+deactivate AuthModule
+AuthController --> AuthMiddleware: Admin ID
+deactivate AuthController
+AuthMiddleware -> Routes: Handle GET /api/v1/campgrounds
+activate Routes
+Routes -> Controller: getCampgrounds()
+activate Controller
+Controller -> CampgroundModel: Campground.find()
+activate CampgroundModel
+CampgroundModel --> Controller: List of campgrounds
+deactivate CampgroundModel
+Controller --> Routes: Response with campgrounds
+deactivate Controller
+Routes --> CampgroundsDatabase: Query campgrounds
+activate CampgroundsDatabase
+CampgroundsDatabase --> Routes: List of campgrounds
+deactivate CampgroundsDatabase
+Routes --> Server: Response with campgrounds
+deactivate Routes
+AuthMiddleware --> Server: Continue handling
+
+User -> Server: Send "Get single campground"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> AuthController: Verify token
+activate AuthController
+AuthController -> AuthModule: Decode JWT
+activate AuthModule
+AuthModule --> AuthController: Decoded user
+deactivate AuthModule
+AuthController --> AuthMiddleware: Admin ID
+deactivate AuthController
+AuthMiddleware -> Routes: Handle GET /api/v1/campgrounds/:campground_ID
+activate Routes
+Routes -> Controller: getCampground()
+activate Controller
+Controller -> CampgroundModel: Campground.findById(campground_ID)
+activate CampgroundModel
+CampgroundModel --> Controller: Found campground
+deactivate CampgroundModel
+Controller --> Routes: Response with campground
+deactivate Controller
+Routes --> CampgroundsDatabase: Query campground by ID
+activate CampgroundsDatabase
+CampgroundsDatabase --> Routes: Found campground
+deactivate CampgroundsDatabase
+Routes --> Server: Response with campground
+deactivate Routes
+AuthMiddleware --> Server: Continue handling
+
+User -> Server: Send "Create new campground"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> AuthController: Verify token (Admin)
+activate AuthController
+AuthController -> AuthModule: Decode JWT
+activate AuthModule
+AuthModule --> AuthController: Decoded user
+deactivate AuthModule
+AuthController --> AuthMiddleware: Admin ID
+deactivate AuthController
+AuthMiddleware -> Routes: Handle POST /api/v1/campgrounds
+activate Routes
+Routes -> Controller: createCampground()
+activate Controller
+Controller -> CampgroundModel: Campground.create()
+activate CampgroundModel
+CampgroundModel --> Controller: Created campground
+deactivate CampgroundModel
+Controller --> Routes: Response with created campground
+deactivate Controller
+Routes --> CampgroundsDatabase: Insert new campground
+activate CampgroundsDatabase
+CampgroundsDatabase --> Routes: Created campground
+deactivate CampgroundsDatabase
+Routes --> Server: Response with created campground
+deactivate Routes
+AuthMiddleware --> Server: Continue handling
+
+User -> Server: Send "Update single campground"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> AuthController: Verify token (Admin)
+activate AuthController
+AuthController -> AuthModule: Decode JWT
+activate AuthModule
+AuthModule --> AuthController: Decoded user
+deactivate AuthModule
+AuthController --> AuthMiddleware: Admin ID
+deactivate AuthController
+AuthMiddleware -> Routes: Handle PUT /api/v1/campgrounds/:campground_ID
+activate Routes
+Routes -> Controller: updateCampground()
+activate Controller
+Controller -> CampgroundModel: Campground.findByIdAndUpdate()
+activate CampgroundModel
+CampgroundModel --> Controller: Updated campground
+deactivate CampgroundModel
+Controller --> Routes: Response with updated campground
+deactivate Controller
+Routes --> CampgroundsDatabase: Update campground by ID
+activate CampgroundsDatabase
+CampgroundsDatabase --> Routes: Updated campground
+deactivate CampgroundsDatabase
+Routes --> Server: Response with updated campground
+deactivate Routes
+AuthMiddleware --> Server: Continue handling
+
+User -> Server: Send "Delete single campground"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> AuthController: Verify token (Admin)
+activate AuthController
+AuthController -> AuthModule: Decode JWT
+activate AuthModule
+AuthModule --> AuthController: Decoded user
+deactivate AuthModule
+AuthController --> AuthMiddleware: Admin ID
+deactivate AuthController
+AuthMiddleware -> Routes: Handle DELETE /api/v1/campgrounds/:campground_ID
+activate Routes
+Routes -> Controller: deleteCampground()
+activate Controller
+Controller -> CampgroundModel: Campground.findByIdAndDelete()
+activate CampgroundModel
+CampgroundModel --> Controller: Deleted campground
+deactivate CampgroundModel
+Controller --> Routes: Response with deleted campground
+deactivate Controller
+Routes --> CampgroundsDatabase: Delete campground by ID
+activate CampgroundsDatabase
+CampgroundsDatabase --> Routes: Deleted campground
+deactivate CampgroundsDatabase
+Routes --> Server: Response with deleted campground
+deactivate Routes
+AuthMiddleware --> Server: Continue handling
+
+User -> Server: Send "Get campground weather"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> AuthController: Verify token
+activate AuthController
+AuthController -> AuthModule: Decode JWT
+activate AuthModule
+AuthModule --> AuthController: Decoded user
+deactivate AuthModule
+AuthController --> AuthMiddleware: Admin ID
+deactivate AuthController
+AuthMiddleware -> Routes: Handle GET /api/v1/campgrounds/:campground_ID/Weather
+activate Routes
+Routes -> Controller: getCampgroundWeather()
+activate Controller
+Controller -> CampgroundModel: Campground.findById()
+activate CampgroundModel
+CampgroundModel --> Controller: Found campground
+deactivate CampgroundModel
+Controller -> ExternalAPI: getWeatherByTown()
+activate ExternalAPI
+ExternalAPI --> Controller: Weather data
+deactivate ExternalAPI
+Controller --> Routes: Response with weather data
+deactivate Controller
+Routes --> Server: Response with weather data
+deactivate Routes
+AuthMiddleware --> Server: Continue handling
+
+User -> Server: Send "Get campground location"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> AuthController: Verify token
+activate AuthController
+AuthController -> AuthModule: Decode JWT
+activate AuthModule
+AuthModule --> AuthController: Decoded user
+deactivate AuthModule
+AuthController --> AuthMiddleware: Admin ID
+deactivate AuthController
+AuthMiddleware -> Routes: Handle GET /api/v1/campgrounds/:campground_ID/location
+activate Routes
+Routes -> Controller: getCampgroundLocation()
+activate Controller
+Controller -> CampgroundModel: Campground.findOne()
+activate CampgroundModel
+CampgroundModel --> Controller: Found campground
+deactivate CampgroundModel
+Controller --> Routes: Response with campground location
+deactivate Controller
+Routes --> Server: Response with campground location
+deactivate Routes
+AuthMiddleware --> Server: Continue handling
+
+@enduml
