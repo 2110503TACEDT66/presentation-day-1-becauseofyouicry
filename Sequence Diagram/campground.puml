@@ -22,7 +22,7 @@ AuthController -> AuthModule: Decode JWT
 activate AuthModule
 AuthModule --> AuthController: Decoded user
 deactivate AuthModule
-AuthController --> AuthMiddleware: Admin ID
+AuthController --> AuthMiddleware: User ID
 deactivate AuthController
 AuthMiddleware -> Routes: Handle GET /api/v1/campgrounds
 activate Routes
@@ -52,7 +52,7 @@ AuthController -> AuthModule: Decode JWT
 activate AuthModule
 AuthModule --> AuthController: Decoded user
 deactivate AuthModule
-AuthController --> AuthMiddleware: Admin ID
+AuthController --> AuthMiddleware: User ID
 deactivate AuthController
 AuthMiddleware -> Routes: Handle GET /api/v1/campgrounds/:campground_ID
 activate Routes
@@ -172,7 +172,7 @@ AuthController -> AuthModule: Decode JWT
 activate AuthModule
 AuthModule --> AuthController: Decoded user
 deactivate AuthModule
-AuthController --> AuthMiddleware: Admin ID
+AuthController --> AuthMiddleware: User ID
 deactivate AuthController
 AuthMiddleware -> Routes: Handle GET /api/v1/campgrounds/:campground_ID/Weather
 activate Routes
@@ -202,7 +202,7 @@ AuthController -> AuthModule: Decode JWT
 activate AuthModule
 AuthModule --> AuthController: Decoded user
 deactivate AuthModule
-AuthController --> AuthMiddleware: Admin ID
+AuthController --> AuthMiddleware: User ID
 deactivate AuthController
 AuthMiddleware -> Routes: Handle GET /api/v1/campgrounds/:campground_ID/location
 activate Routes
