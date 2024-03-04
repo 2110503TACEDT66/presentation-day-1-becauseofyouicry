@@ -6,6 +6,7 @@ participant "server.js" as Server
 participant "<<middleware>>\auth" as AuthMiddleware
 participant "<<controllers>>\booking" as BookingController
 participant "<<models>>\Booking" as BookingModel
+database "MongoDB\n:bookings" as MongoDB
 
 User -> Server: Send "Create Booking"
 activate Server
@@ -15,6 +16,10 @@ AuthMiddleware -> BookingController: addBooking()
 activate BookingController
 BookingController -> BookingModel: Booking.create()
 activate BookingModel
+BookingModel -> MongoDB: Insert new booking
+activate MongoDB
+MongoDB --> BookingModel: Confirmation
+deactivate MongoDB
 BookingModel --> BookingController: Created booking
 deactivate BookingModel
 BookingController --> Server: Response with created booking
@@ -43,6 +48,10 @@ AuthMiddleware -> BookingController: updateBooking()
 activate BookingController
 BookingController -> BookingModel: Booking.findByIdAndUpdate()
 activate BookingModel
+BookingModel -> MongoDB: Update booking in database
+activate MongoDB
+MongoDB --> BookingModel: Confirmation
+deactivate MongoDB
 BookingModel --> BookingController: Updated user's booking
 deactivate BookingModel
 BookingController --> Server: Response with updated user's booking
@@ -57,6 +66,10 @@ AuthMiddleware -> BookingController: deleteBooking()
 activate BookingController
 BookingController -> BookingModel: Booking.findByIdAndDelete()
 activate BookingModel
+BookingModel -> MongoDB: Delete booking from database
+activate MongoDB
+MongoDB --> BookingModel: Confirmation
+deactivate MongoDB
 BookingModel --> BookingController: Deleted user's booking
 deactivate BookingModel
 BookingController --> Server: Response with deleted user's booking
@@ -85,6 +98,10 @@ AuthMiddleware -> BookingController: updateBooking()
 activate BookingController
 BookingController -> BookingModel: Booking.findByIdAndUpdate()
 activate BookingModel
+BookingModel -> MongoDB: Update booking in database
+activate MongoDB
+MongoDB --> BookingModel: Confirmation
+deactivate MongoDB
 BookingModel --> BookingController: Updated user booking
 deactivate BookingModel
 BookingController --> Server: Response with updated user booking
@@ -99,6 +116,10 @@ AuthMiddleware -> BookingController: deleteBooking()
 activate BookingController
 BookingController -> BookingModel: Booking.findByIdAndDelete()
 activate BookingModel
+BookingModel -> MongoDB: Delete booking from database
+activate MongoDB
+MongoDB --> BookingModel: Confirmation
+deactivate MongoDB
 BookingModel --> BookingController: Deleted user booking
 deactivate BookingModel
 BookingController --> Server: Response with deleted user booking
