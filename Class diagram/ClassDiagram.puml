@@ -1,0 +1,50 @@
+@startuml
+
+package "Campground" {
+    class "<<Application>>\nCampgroundBookingService" as BaseCampground {}
+
+    class "<<Resource>>\nAuth" as ResourceAuth {}
+
+    class "<<Resource>>\nCampground" as ResourceCampground {}
+
+    class "<<Resource>>\nBooking" as ResourceBooking {}
+
+    
+
+    class "<<Resource>>\nLogin" as rLogin {}
+
+    class "<<Resource>>\nLogout" as rLogout {}
+
+    class "<<Resource>>\nRegister" as rRegister {}
+
+    class "<<Resource>>\nGetMe" as rGetme {}
+
+    class "<<Model>>\nUser" as ModelUser {
+        -name
+        -email
+        -password
+        -role
+    }
+
+
+    
+
+
+}
+
+BaseCampground --> ResourceAuth: "<<Path>> /auth"
+ResourceAuth --> rRegister: "<<Path>> /register"
+ResourceAuth --> rLogin: "<<Path>> /login"
+ResourceAuth --> rLogout: "<<Path>> /logout"
+ResourceAuth --> rGetme: "<<Path>> /me"
+
+
+rRegister --> ModelUser: "<<Use>>" 
+rLogin --> ModelUser: "<<Use>>" 
+rLogout --> ModelUser: "<<Use>>" 
+rGetme --> ModelUser: "<<Use>>" 
+
+BaseCampground --> ResourceCampground: "<<Path>> /campgrounds"
+BaseCampground --> ResourceBooking: "<<Path>> /booking"
+
+@enduml
