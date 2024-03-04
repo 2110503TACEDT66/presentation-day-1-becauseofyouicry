@@ -24,7 +24,7 @@ client <-- routerAuth --: token
 client -> server ++: login(email, password)
 server -> routerAuth ++: use('/api/v1/auth', auth)
 routerAuth -> controllersAuth ++: post("/login", login)
-controllersAuth -> modeluser ++: findOne({email}).select("+password")
+controllersAuth -> modeluser ++: User.findOne({email}).select("+password")
 modeluser -> UsersDatabase ++: findOne({email}).select("+password")
 UsersDatabase --> modeluser --: user
 controllersAuth <-- modeluser --: user
@@ -43,9 +43,9 @@ middlewareAuth -> modeluser ++: User.findById(decodeToken)
 modeluser -> UsersDatabase ++: findById(decodeToken)
 modeluser <-- UsersDatabase --: user
 middlewareAuth <-- modeluser --: user
-routerAuth <-- middlewareAuth --: next
+routerAuth <-- middlewareAuth --: next()
 routerAuth -> controllersAuth ++: get("/me", getMe)
-controllersAuth -> modeluser ++: findById(userId)
+controllersAuth -> modeluser ++: User.findById(userId)
 modeluser -> UsersDatabase ++: findById(userId)
 modeluser <-- UsersDatabase --: user
 controllersAuth <-- modeluser --: user
