@@ -67,10 +67,7 @@ const sendTokenResponse=(user,statusCode,res)=>{
 
 exports.getMe = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user.id).populate({
-            path:'bookings',
-            select:'campground Date'
-        });
+        const user = await User.findById(req.user.id);
 
         res.status(200).json({
             success: true,
