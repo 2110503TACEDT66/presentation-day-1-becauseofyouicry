@@ -1,148 +1,108 @@
 @startuml
 
 actor User
+actor Admin
 participant "server.js" as Server
-participant "<<modules>>\nauth" as AuthModule
-participant "<<controllers>>\nauth" as AuthController
-participant "<<middleware>>\nauth" as AuthMiddleware
-participant "<<routes>>\ncampgrounds" as CampgroundRoutes
-participant "<<controllers>>\ncampground" as CampgroundController
-participant "<<models>>\nCampground" as CampgroundModel
-participant "openweathermapAPI" as ExternalAPI
-database "MongoDB\n:campgrounds" as CampgroundsDatabase
-participant "<<routes>>\nbookings" as BookingRoutes
-participant "<<controllers>>\nbooking" as BookingController
-participant "<<models>>\nBooking" as BookingModel
-participant "<<models>>\nUser" as UserModel
+participant "<<middleware>>\auth" as AuthMiddleware
+participant "<<controllers>>\booking" as BookingController
+participant "<<models>>\Booking" as BookingModel
 
-User -> Server: Send "Get all bookings"
+User -> Server: Send "Create Booking"
 activate Server
 Server -> AuthMiddleware: Call <<middleware>> auth middleware
 activate AuthMiddleware
-AuthMiddleware -> AuthController: Verify token
-activate AuthController
-AuthController -> AuthModule: Decode JWT
-activate AuthModule
-AuthModule --> AuthController: Decoded user
-deactivate AuthModule
-AuthController --> AuthMiddleware: User ID
-deactivate AuthController
-AuthMiddleware -> BookingRoutes: Handle GET /api/v1/bookings
-activate BookingRoutes
-BookingRoutes -> BookingController: getBookings()
-activate BookingController
-BookingController -> BookingModel: Booking.find()
-activate BookingModel
-BookingModel --> BookingController: List of bookings
-deactivate BookingModel
-BookingController --> BookingRoutes: Response with bookings
-deactivate BookingController
-BookingRoutes --> Server: Response with bookings
-deactivate BookingRoutes
-AuthMiddleware --> Server: Continue handling
-
-User -> Server: Send "Get single booking"
-activate Server
-Server -> AuthMiddleware: Call <<middleware>> auth middleware
-activate AuthMiddleware
-AuthMiddleware -> AuthController: Verify token
-activate AuthController
-AuthController -> AuthModule: Decode JWT
-activate AuthModule
-AuthModule --> AuthController: Decoded user
-deactivate AuthModule
-AuthController --> AuthMiddleware: User ID
-deactivate AuthController
-AuthMiddleware -> BookingRoutes: Handle GET /api/v1/bookings/:booking_ID
-activate BookingRoutes
-BookingRoutes -> BookingController: getBooking()
-activate BookingController
-BookingController -> BookingModel: Booking.findById(booking_ID)
-activate BookingModel
-BookingModel --> BookingController: Found booking
-deactivate BookingModel
-BookingController --> BookingRoutes: Response with booking
-deactivate BookingController
-BookingRoutes --> Server: Response with booking
-deactivate BookingRoutes
-AuthMiddleware --> Server: Continue handling
-
-User -> Server: Send "Create new booking"
-activate Server
-Server -> AuthMiddleware: Call <<middleware>> auth middleware
-activate AuthMiddleware
-AuthMiddleware -> AuthController: Verify token
-activate AuthController
-AuthController -> AuthModule: Decode JWT
-activate AuthModule
-AuthModule --> AuthController: Decoded user
-deactivate AuthModule
-AuthController --> AuthMiddleware: User ID
-deactivate AuthController
-AuthMiddleware -> BookingRoutes: Handle POST /api/v1/bookings
-activate BookingRoutes
-BookingRoutes -> BookingController: addBooking()
+AuthMiddleware -> BookingController: addBooking()
 activate BookingController
 BookingController -> BookingModel: Booking.create()
 activate BookingModel
 BookingModel --> BookingController: Created booking
 deactivate BookingModel
-BookingController --> BookingRoutes: Response with created booking
+BookingController --> Server: Response with created booking
 deactivate BookingController
-BookingRoutes --> Server: Response with created booking
-deactivate BookingRoutes
 AuthMiddleware --> Server: Continue handling
 
-User -> Server: Send "Update single booking"
+User -> Server: Send "Get all user's bookings"
 activate Server
 Server -> AuthMiddleware: Call <<middleware>> auth middleware
 activate AuthMiddleware
-AuthMiddleware -> AuthController: Verify token
-activate AuthController
-AuthController -> AuthModule: Decode JWT
-activate AuthModule
-AuthModule --> AuthController: Decoded user
-deactivate AuthModule
-AuthController --> AuthMiddleware: User ID
-deactivate AuthController
-AuthMiddleware -> BookingRoutes: Handle PUT /api/v1/bookings/:booking_ID
-activate BookingRoutes
-BookingRoutes -> BookingController: updateBooking()
+AuthMiddleware -> BookingController: getBookings()
+activate BookingController
+BookingController -> BookingModel: Booking.find(user)
+activate BookingModel
+BookingModel --> BookingController: List of user's bookings
+deactivate BookingModel
+BookingController --> Server: Response with user's bookings
+deactivate BookingController
+AuthMiddleware --> Server: Continue handling
+
+User -> Server: Send "Update user's booking"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> BookingController: updateBooking()
 activate BookingController
 BookingController -> BookingModel: Booking.findByIdAndUpdate()
 activate BookingModel
-BookingModel --> BookingController: Updated booking
+BookingModel --> BookingController: Updated user's booking
 deactivate BookingModel
-BookingController --> BookingRoutes: Response with updated booking
+BookingController --> Server: Response with updated user's booking
 deactivate BookingController
-BookingRoutes --> Server: Response with updated booking
-deactivate BookingRoutes
 AuthMiddleware --> Server: Continue handling
 
-User -> Server: Send "Delete single booking"
+User -> Server: Send "Delete user's booking"
 activate Server
 Server -> AuthMiddleware: Call <<middleware>> auth middleware
 activate AuthMiddleware
-AuthMiddleware -> AuthController: Verify token
-activate AuthController
-AuthController -> AuthModule: Decode JWT
-activate AuthModule
-AuthModule --> AuthController: Decoded user
-deactivate AuthModule
-AuthController --> AuthMiddleware: User ID
-deactivate AuthController
-AuthMiddleware -> BookingRoutes: Handle DELETE /api/v1/bookings/:booking_ID
-activate BookingRoutes
-BookingRoutes -> BookingController: deleteBooking()
+AuthMiddleware -> BookingController: deleteBooking()
 activate BookingController
 BookingController -> BookingModel: Booking.findByIdAndDelete()
 activate BookingModel
-BookingModel --> BookingController: Deleted booking
+BookingModel --> BookingController: Deleted user's booking
 deactivate BookingModel
-BookingController --> BookingRoutes: Response with deleted booking
+BookingController --> Server: Response with deleted user's booking
 deactivate BookingController
-BookingRoutes --> Server: Response with deleted booking
-deactivate BookingRoutes
+AuthMiddleware --> Server: Continue handling
+
+Admin -> Server: Send "View all bookings"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> BookingController: getBookings()
+activate BookingController
+BookingController -> BookingModel: Booking.find()
+activate BookingModel
+BookingModel --> BookingController: List of bookings
+deactivate BookingModel
+BookingController --> Server: Response with all bookings
+deactivate BookingController
+AuthMiddleware --> Server: Continue handling
+
+Admin -> Server: Send "Update user booking"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> BookingController: updateBooking()
+activate BookingController
+BookingController -> BookingModel: Booking.findByIdAndUpdate()
+activate BookingModel
+BookingModel --> BookingController: Updated user booking
+deactivate BookingModel
+BookingController --> Server: Response with updated user booking
+deactivate BookingController
+AuthMiddleware --> Server: Continue handling
+
+Admin -> Server: Send "Delete user booking"
+activate Server
+Server -> AuthMiddleware: Call <<middleware>> auth middleware
+activate AuthMiddleware
+AuthMiddleware -> BookingController: deleteBooking()
+activate BookingController
+BookingController -> BookingModel: Booking.findByIdAndDelete()
+activate BookingModel
+BookingModel --> BookingController: Deleted user booking
+deactivate BookingModel
+BookingController --> Server: Response with deleted user booking
+deactivate BookingController
 AuthMiddleware --> Server: Continue handling
 
 @enduml
